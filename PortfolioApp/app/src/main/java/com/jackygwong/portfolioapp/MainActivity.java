@@ -1,88 +1,63 @@
 package com.jackygwong.portfolioapp;
 
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity {
+    @Bind(R.id.popular_movies_button)
+    Button popular_movies_button;
+    @Bind(R.id.scores_button)
+    Button scores_button;
+    @Bind(R.id.library_button)
+    Button library_button;
+    @Bind(R.id.build_it_bigger_button)
+    Button build_it_bigger_button;
+    @Bind(R.id.xyz_reader_button)
+    Button xyz_button;
+    @Bind(R.id.capstone_button)
+    Button capstone_button;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
 
-        Button button = (Button) findViewById(R.id.popular_movies_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Context context = getApplicationContext();
-                CharSequence text = "This button will launch my popular movies app!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        });
+    }
 
-        button = (Button) findViewById(R.id.scores_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Context context = getApplicationContext();
-                CharSequence text = "This button will launch my scores app!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        });
-
-        button = (Button) findViewById(R.id.library_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Context context = getApplicationContext();
-                CharSequence text = "This button will launch my library app!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        });
-
-        button = (Button) findViewById(R.id.build_it_bigger_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Context context = getApplicationContext();
-                CharSequence text = "This button will launch my build it bigger app!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        });
-
-        button = (Button) findViewById(R.id.xyz_reader_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Context context = getApplicationContext();
-                CharSequence text = "This button will launch my xyz reader app!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        });
-
-        button = (Button) findViewById(R.id.capstone_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Context context = getApplicationContext();
-                CharSequence text = "This button will launch my capstone app!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-            }
-        });
-
+    @OnClick({R.id.popular_movies_button, R.id.scores_button, R.id.library_button, R.id.build_it_bigger_button, R.id.xyz_reader_button, R.id.capstone_button})
+    public void button_click(Button button) {
+        int buttonId = button.getId();
+        switch (buttonId) {
+            case R.id.popular_movies_button:
+                Toast.makeText(getApplicationContext(), "This button will launch my popular movies app!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.scores_button:
+                Toast.makeText(getApplicationContext(), "This button will launch my scores app!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.library_button:
+                Toast.makeText(getApplicationContext(), "This button will launch my library app!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.build_it_bigger_button:
+                Toast.makeText(getApplicationContext(), "This button will launch my build it bigger app!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.xyz_reader_button:
+                Toast.makeText(getApplicationContext(), "This button will launch my xyz reader app!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.capstone_button:
+                Toast.makeText(getApplicationContext(), "This button will launch my capstone app!", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     @Override
