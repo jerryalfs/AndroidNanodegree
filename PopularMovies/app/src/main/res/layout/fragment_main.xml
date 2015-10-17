@@ -9,15 +9,13 @@
 
     <GridView
         android:id="@+id/gridview_movies"
-        android:layout_width="168dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="3"/>
-
-    <ImageView
-        android:layout_width="149dp"
-        android:layout_height="149dp"
-        android:id="@+id/imageView"
-        android:layout_gravity="right|center_vertical"
-        android:contentDescription="testing" />
+        android:numColumns="auto_fit"
+        android:columnWidth="90dp"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"/>
 
 </FrameLayout>
