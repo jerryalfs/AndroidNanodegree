@@ -135,7 +135,7 @@ public class MainActivityFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String moviesJsonStr = null;
 
-            String key = "***REMOVED***";
+            String key = "REMOVED";
 
             try {
 
@@ -151,7 +151,6 @@ public class MainActivityFragment extends Fragment {
 
 
                 // Construct the URL for the TMDB query
-                //URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=***REMOVED***");
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
