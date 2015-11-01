@@ -21,6 +21,10 @@ android {
     repositories {
         mavenCentral()
     }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {
@@ -28,4 +32,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile files('libs/picasso-2.5.2.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile files('libs/butterknife-7.0.1.jar')
+    compile 'com.jakewharton:butterknife:7.0.1'
 }

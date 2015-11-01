@@ -1,5 +1,6 @@
 package com.jackygwong.popularmovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,30 +27,32 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * A placeholder fragment containing a simple view.
- */
+
 public class MainActivityFragment extends Fragment {
+
+    private ImageAdapter imageAdapter;
 
     public MainActivityFragment() {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Enable menu for fragment
         setHasOptionsMenu(true);
+        FetchMoviesTask movieTask = new FetchMoviesTask();
+        movieTask.execute("popularity.desc");
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.moviefragment, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_refresh){
+        if (id == R.id.action_refresh) {
             FetchMoviesTask movieTask = new FetchMoviesTask();
             movieTask.execute("popularity.desc");
             return true;
@@ -61,45 +66,25 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        String[] movieTitlesArray = {
-                "Movie1",
-                "Movie2",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie3",
-                "Movie4"
-        };
-        /*
-        List<String> titleArrayList = new ArrayList<String>(
-                Arrays.asList(movieTitlesArray));
-
-        ArrayAdapter<String> moviesAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.grid_item_text,
-                R.id.grid_item_textview,
-                titleArrayList);
-*/
+        //Set adapter to movie grid view
         GridView movieGrid = (GridView) rootView.findViewById(R.id.gridview_movies);
-        movieGrid.setAdapter(new ImageAdapter(getActivity()));
+        imageAdapter = new ImageAdapter(getActivity());
+        movieGrid.setAdapter(imageAdapter);
+        movieGrid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l){
+                Toast.makeText(getActivity(), "This button will launch a new intent", Toast.LENGTH_SHORT).show();
+                Intent movieIntent = new Intent(getActivity(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, "MovieTitle");
+                startActivity(movieIntent);
+
+            }
+        });
 
         return rootView;
     }
 
 
-
-    public class FetchMoviesTask extends AsyncTask<String, Void, String[]>{
+    public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         //Function for retrieving backdrop codes for movies
@@ -109,23 +94,18 @@ public class MainActivityFragment extends Fragment {
             JSONObject moviesJson = new JSONObject(movieJsonStr);
             JSONArray moviesArray = moviesJson.getJSONArray("results");
             String[] resultsStr = new String[moviesArray.length()];
-            for(int i = 0; i < moviesArray.length(); i++){
+            for (int i = 0; i < moviesArray.length(); i++) {
                 JSONObject currentMovie = moviesArray.getJSONObject(i);
                 resultsStr[i] = currentMovie.getString("backdrop_path");
             }
 
-            for (String s : resultsStr){
-                Log.v(LOG_TAG, "Movie backdrop: " + s);
-            }
             return resultsStr;
-
-
 
 
         }
 
         @Override
-        protected String[] doInBackground(String... params){
+        protected String[] doInBackground(String... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -152,8 +132,6 @@ public class MainActivityFragment extends Fragment {
 
                 // Construct the URL for the TMDB query
                 URL url = new URL(builtUri.toString());
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
-
 
                 // Create the request to TMDB, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -171,9 +149,7 @@ public class MainActivityFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
+                    //Add newlines for easier debugging
                     buffer.append(line + "\n");
                 }
 
@@ -183,14 +159,13 @@ public class MainActivityFragment extends Fragment {
                 }
                 //Create Json string from string buffer and output it to log
                 moviesJsonStr = buffer.toString();
-                Log.v(LOG_TAG, "Movie String:" + moviesJsonStr);
 
             } catch (IOException e) {
                 Log.e("MainActivityFragment", "Error ", e);
                 // If the code didn't successfully get the movie data, there's no point in attemping
                 // to parse it.
                 return null;
-            } finally{
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
@@ -203,13 +178,30 @@ public class MainActivityFragment extends Fragment {
                 }
             }
 
-            try{
+            try {
                 return getMoviePosterData(moviesJsonStr);
-            }catch(JSONException e){
+            } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            super.onPostExecute(result);
+            if (result != null) {
+                imageAdapter.clearGrid();
+                for (String s : result) {
+                    //Create backdrop URL using base + acquired backdrop path
+                    String movieImage = "http://image.tmdb.org/t/p/w185/" + s;
+                    imageAdapter.appendGrid(movieImage);
+                }
+                //Notify the adapter that the data has changed to refresh it
+                imageAdapter.notifyDataSetChanged();
+
+            }
+
         }
 
     }

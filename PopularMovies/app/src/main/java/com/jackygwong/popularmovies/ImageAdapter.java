@@ -8,6 +8,9 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by jwong on 10/4/2015.
  */
@@ -19,7 +22,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return mThumbIds.length;
+        return mThumbIds.size();
     }
 
     public Object getItem(int position) {
@@ -30,31 +33,38 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
+    public void clearGrid(){
+        mThumbIds.clear();
+    }
+
+    public void appendGrid(String imageURL){
+        mThumbIds.add(imageURL);
+    }
+
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
+
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
             //imageView.setLayoutParams(new GridView.LayoutParams(200, 200));
             imageView.setAdjustViewBounds(true);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             imageView.setPadding(8, 8, 8, 8);
         } else {
             imageView = (ImageView) convertView;
         }
 
+
+
+
         //Use picasso to load the image from the provided URL
-        Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
+        Picasso.with(mContext).load(mThumbIds.get(position)).into(imageView);
         return imageView;
     }
 
     // references to our images
-    private String[] mThumbIds = {
-            "http://i.imgur.com/DvpvklR.png",
-            "http://i.imgur.com/DvpvklR.png",
-            "http://i.imgur.com/DvpvklR.png",
-            "http://i.imgur.com/DvpvklR.png",
-            "http://i.imgur.com/DvpvklR.png"
-    };
+    private List<String> mThumbIds = new ArrayList<String>();
+
 }
