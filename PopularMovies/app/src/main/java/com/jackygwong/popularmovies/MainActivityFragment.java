@@ -1,9 +1,12 @@
 package com.jackygwong.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,8 +33,15 @@ import java.net.URL;
 public class MainActivityFragment extends Fragment {
 
     private ImageAdapter imageAdapter;
+    private MovieDetails[] movieResults;
 
     public MainActivityFragment() {
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        updateMovies();
     }
 
     @Override
@@ -39,8 +49,22 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         //Enable menu for fragment
         setHasOptionsMenu(true);
-        FetchMoviesTask movieTask = new FetchMoviesTask();
-        movieTask.execute("popularity.desc");
+
+        //If there is a saved instance, set the movie results array to the array saved
+        if (savedInstanceState != null && savedInstanceState.containsKey("movies")){
+            Parcelable[] parcels = savedInstanceState.getParcelableArray("movies");
+            movieResults = new MovieDetails[parcels.length];
+            for(int i = 0; i < parcels.length; i++){
+                movieResults[i] = (MovieDetails)parcels[i];
+            }
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        outState.putParcelableArray("movies", movieResults);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -52,8 +76,7 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchMoviesTask movieTask = new FetchMoviesTask();
-            movieTask.execute("popularity.desc");
+            updateMovies();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -69,19 +92,30 @@ public class MainActivityFragment extends Fragment {
         GridView movieGrid = (GridView) rootView.findViewById(R.id.gridview_movies);
         imageAdapter = new ImageAdapter(getActivity());
         movieGrid.setAdapter(imageAdapter);
-        movieGrid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        movieGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l){
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
+                movieIntent.putExtra("MOVIEDETAILS", imageAdapter.getItem(position));
+                /*
                 movieIntent.putExtra("TITLE", imageAdapter.getItem(position).original_title);
                 movieIntent.putExtra("SYNOPSIS", imageAdapter.getItem(position).synopsis);
                 movieIntent.putExtra("RATING", imageAdapter.getItem(position).user_rating);
                 movieIntent.putExtra("RELEASE", imageAdapter.getItem(position).release_date);
-                movieIntent.putExtra("POSTER", imageAdapter.getItem(position).poster_path);
+                movieIntent.putExtra("POSTER", imageAdapter.getItem(position).poster_path);*/
                 startActivity(movieIntent);
 
             }
         });
+
+        if(savedInstanceState != null && savedInstanceState.containsKey("movies")){
+            imageAdapter.clearGrid();
+            for (MovieDetails movie : movieResults) {
+                imageAdapter.appendGrid(movie);
+            }
+            //Notify the adapter that the data has changed to refresh it
+            imageAdapter.notifyDataSetChanged();
+        }
 
         return rootView;
     }
@@ -96,18 +130,18 @@ public class MainActivityFragment extends Fragment {
 
             JSONObject moviesJson = new JSONObject(movieJsonStr);
             JSONArray moviesArray = moviesJson.getJSONArray("results");
-            MovieDetails[] movieResults = new MovieDetails[moviesArray.length()];
+            movieResults = new MovieDetails[moviesArray.length()];
 
             for (int i = 0; i < moviesArray.length(); i++){
                 JSONObject currentMovie = moviesArray.getJSONObject(i);
-                movieResults[i] = new MovieDetails();
-                movieResults[i].poster_path = currentMovie.getString("poster_path");
-                movieResults[i].original_title = currentMovie.getString("original_title");
-                movieResults[i].release_date = currentMovie.getString("release_date");
-                movieResults[i].synopsis = currentMovie.getString("overview");
-                movieResults[i].user_rating = currentMovie.getString("vote_average");
+                movieResults[i] = new MovieDetails(
+                        currentMovie.getString("original_title"),
+                        currentMovie.getString("poster_path"),
+                        currentMovie.getString("overview"),
+                        currentMovie.getString("vote_average"),
+                        currentMovie.getString("release_date")
+                        );
             }
-
             return movieResults;
 
 
@@ -211,6 +245,18 @@ public class MainActivityFragment extends Fragment {
 
         }
 
+    }
+
+    private void updateMovies(){
+        FetchMoviesTask movieTask = new FetchMoviesTask();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sort_by_value = sharedPref.getString(getString(R.string.sort_by_key), "0");
+        if (sort_by_value.equals("0")){
+            movieTask.execute("popularity.desc");
+        }else if(sort_by_value.equals("1")){
+            movieTask.execute("vote_average.desc");
+        }else
+            movieTask.execute("popularity.desc");
     }
 
 
