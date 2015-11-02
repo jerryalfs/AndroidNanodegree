@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,8 +72,12 @@ public class MainActivityFragment extends Fragment {
         movieGrid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l){
-                Toast.makeText(getActivity(), "This button will launch a new intent", Toast.LENGTH_SHORT).show();
-                Intent movieIntent = new Intent(getActivity(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, "MovieTitle");
+                Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
+                movieIntent.putExtra("TITLE", imageAdapter.getItem(position).original_title);
+                movieIntent.putExtra("SYNOPSIS", imageAdapter.getItem(position).synopsis);
+                movieIntent.putExtra("RATING", imageAdapter.getItem(position).user_rating);
+                movieIntent.putExtra("RELEASE", imageAdapter.getItem(position).release_date);
+                movieIntent.putExtra("POSTER", imageAdapter.getItem(position).poster_path);
                 startActivity(movieIntent);
 
             }
@@ -84,28 +87,34 @@ public class MainActivityFragment extends Fragment {
     }
 
 
-    public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
+    public class FetchMoviesTask extends AsyncTask<String, Void, MovieDetails[]> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         //Function for retrieving backdrop codes for movies
-        private String[] getMoviePosterData(String movieJsonStr)
+        private MovieDetails[] getMovieData(String movieJsonStr)
                 throws JSONException {
 
             JSONObject moviesJson = new JSONObject(movieJsonStr);
             JSONArray moviesArray = moviesJson.getJSONArray("results");
-            String[] resultsStr = new String[moviesArray.length()];
-            for (int i = 0; i < moviesArray.length(); i++) {
+            MovieDetails[] movieResults = new MovieDetails[moviesArray.length()];
+
+            for (int i = 0; i < moviesArray.length(); i++){
                 JSONObject currentMovie = moviesArray.getJSONObject(i);
-                resultsStr[i] = currentMovie.getString("backdrop_path");
+                movieResults[i] = new MovieDetails();
+                movieResults[i].poster_path = currentMovie.getString("poster_path");
+                movieResults[i].original_title = currentMovie.getString("original_title");
+                movieResults[i].release_date = currentMovie.getString("release_date");
+                movieResults[i].synopsis = currentMovie.getString("overview");
+                movieResults[i].user_rating = currentMovie.getString("vote_average");
             }
 
-            return resultsStr;
+            return movieResults;
 
 
         }
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected MovieDetails[] doInBackground(String... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -179,7 +188,7 @@ public class MainActivityFragment extends Fragment {
             }
 
             try {
-                return getMoviePosterData(moviesJsonStr);
+                return getMovieData(moviesJsonStr);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -188,14 +197,12 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(MovieDetails[] result) {
             super.onPostExecute(result);
             if (result != null) {
                 imageAdapter.clearGrid();
-                for (String s : result) {
-                    //Create backdrop URL using base + acquired backdrop path
-                    String movieImage = "http://image.tmdb.org/t/p/w185/" + s;
-                    imageAdapter.appendGrid(movieImage);
+                for (MovieDetails movie : result) {
+                    imageAdapter.appendGrid(movie);
                 }
                 //Notify the adapter that the data has changed to refresh it
                 imageAdapter.notifyDataSetChanged();

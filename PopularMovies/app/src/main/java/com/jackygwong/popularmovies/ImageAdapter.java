@@ -25,8 +25,8 @@ public class ImageAdapter extends BaseAdapter {
         return mThumbIds.size();
     }
 
-    public Object getItem(int position) {
-        return null;
+    public MovieDetails getItem(int position) {
+        return mThumbIds.get(position);
     }
 
     public long getItemId(int position) {
@@ -37,8 +37,8 @@ public class ImageAdapter extends BaseAdapter {
         mThumbIds.clear();
     }
 
-    public void appendGrid(String imageURL){
-        mThumbIds.add(imageURL);
+    public void appendGrid(MovieDetails movie){
+        mThumbIds.add(movie);
     }
 
     // create a new ImageView for each item referenced by the Adapter
@@ -57,14 +57,14 @@ public class ImageAdapter extends BaseAdapter {
         }
 
 
-
-
         //Use picasso to load the image from the provided URL
-        Picasso.with(mContext).load(mThumbIds.get(position)).into(imageView);
+        String poster_url = "http://image.tmdb.org/t/p/w185/" + mThumbIds.get(position).poster_path;
+        Picasso.with(mContext).load(poster_url).into(imageView);
         return imageView;
     }
 
     // references to our images
-    private List<String> mThumbIds = new ArrayList<String>();
+    //private List<String> mThumbIds = new ArrayList<String>();
+    private List<MovieDetails> mThumbIds = new ArrayList<MovieDetails>();
 
 }
