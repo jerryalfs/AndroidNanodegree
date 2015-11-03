@@ -97,12 +97,6 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
                 movieIntent.putExtra("MOVIEDETAILS", imageAdapter.getItem(position));
-                /*
-                movieIntent.putExtra("TITLE", imageAdapter.getItem(position).original_title);
-                movieIntent.putExtra("SYNOPSIS", imageAdapter.getItem(position).synopsis);
-                movieIntent.putExtra("RATING", imageAdapter.getItem(position).user_rating);
-                movieIntent.putExtra("RELEASE", imageAdapter.getItem(position).release_date);
-                movieIntent.putExtra("POSTER", imageAdapter.getItem(position).poster_path);*/
                 startActivity(movieIntent);
 
             }

@@ -36,37 +36,15 @@ public class DetailActivityFragment extends Fragment {
             MovieDetails details = intent.getParcelableExtra("MOVIEDETAILS");
             ((TextView) rootView.findViewById(R.id.movie_title)).setText(details.original_title);
             ((TextView) rootView.findViewById(R.id.movie_synopsis)).setText(details.synopsis);
-            ((TextView) rootView.findViewById(R.id.movie_user_rating)).setText(details.user_rating);
-            ((TextView) rootView.findViewById(R.id.movie_release_date)).setText(details.release_date);
+            ((TextView) rootView.findViewById(R.id.movie_user_rating)).setText("User rating: " + details.user_rating);
+            ((TextView) rootView.findViewById(R.id.movie_release_date)).setText("Release date: " + details.release_date);
 
             String poster_url = "http://image.tmdb.org/t/p/w185/" + details.poster_path;
             ImageView poster = (ImageView)rootView.findViewById(R.id.movie_poster);
             Picasso.with(getContext()).load(poster_url).into(poster);
 
         }
-/*
-        if(intent != null && intent.hasExtra("TITLE")) {
-            String movie_title = intent.getStringExtra("TITLE");
-            ((TextView) rootView.findViewById(R.id.movie_title)).setText(movie_title);
-        }
-        if(intent != null && intent.hasExtra("SYNOPSIS")) {
-            String movie_synopsis = intent.getStringExtra("SYNOPSIS");
-            ((TextView) rootView.findViewById(R.id.movie_synopsis)).setText(movie_synopsis);
-        }
-        if(intent != null && intent.hasExtra("RATING")) {
-            String movie_rating = intent.getStringExtra("RATING");
-            ((TextView) rootView.findViewById(R.id.movie_user_rating)).setText("Rating: " + movie_rating);
-        }
-        if(intent != null && intent.hasExtra("RELEASE")) {
-            String movie_release = intent.getStringExtra("RELEASE");
-            ((TextView) rootView.findViewById(R.id.movie_release_date)).setText("Release date: " + movie_release);
-        }
-        if(intent != null && intent.hasExtra("POSTER")) {
-            String poster_url = "http://image.tmdb.org/t/p/w185/" + intent.getStringExtra("POSTER");
-            ImageView poster = (ImageView)rootView.findViewById(R.id.movie_poster);
-            Picasso.with(getContext()).load(poster_url).into(poster);
-        }
-*/
+
         return rootView;
     }
 }
