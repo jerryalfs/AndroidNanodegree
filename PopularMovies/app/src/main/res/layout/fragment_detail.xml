@@ -17,6 +17,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/linear_layout_details"
             android:weightSum="1">
 
             <ImageView
@@ -32,31 +33,39 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Large Text"
-                android:paddingBottom="10dp"
-                android:id="@+id/movie_title" />
+                android:id="@+id/movie_title"
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Medium Text"
-                android:paddingBottom="10dp"
-                android:id="@+id/movie_synopsis" />
+                android:id="@+id/movie_synopsis"
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Medium Text"
-                android:paddingBottom="10dp"
-                android:id="@+id/movie_user_rating" />
+                android:id="@+id/movie_user_rating"
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Medium Text"
-                android:id="@+id/movie_release_date" />
+                android:id="@+id/movie_release_date"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Trailers: "
+                android:id="@+id/trailer_header" />
 
 
         </LinearLayout>

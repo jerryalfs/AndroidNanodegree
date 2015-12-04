@@ -118,7 +118,7 @@ public class MainActivityFragment extends Fragment {
     public class FetchMoviesTask extends AsyncTask<String, Void, MovieDetails[]> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-        //Function for retrieving backdrop codes for movies
+        //Function for retrieving movie data
         private MovieDetails[] getMovieData(String movieJsonStr)
                 throws JSONException {
 
@@ -133,7 +133,8 @@ public class MainActivityFragment extends Fragment {
                         currentMovie.getString("poster_path"),
                         currentMovie.getString("overview"),
                         currentMovie.getString("vote_average"),
-                        currentMovie.getString("release_date")
+                        currentMovie.getString("release_date"),
+                        currentMovie.getString("id")
                         );
             }
             return movieResults;
@@ -168,6 +169,7 @@ public class MainActivityFragment extends Fragment {
 
 
                 // Construct the URL for the TMDB query
+                Log.v("rawrrr", builtUri.toString());
                 URL url = new URL(builtUri.toString());
 
                 // Create the request to TMDB, and open the connection
